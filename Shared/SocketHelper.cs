@@ -9,31 +9,29 @@ public class SocketHelper
     public const char Eom = '␙';
     public const char Ack = '␆';
 
-    public static async Task<string> Receive(Socket socket)
+    public static async Task<string> ReceiveAsync(Socket socket)
     {
         byte[] buffer = new byte[1024];
         int received = await socket.ReceiveAsync(buffer);
-        string response = Encoding.UTF8.GetString(buffer, 0, received);
-        return response;
+        return Encoding.UTF8.GetString(buffer, 0, received);
     }
 
-    public static async Task Send(Socket socket, string message)
+    public static async Task SendAsync(Socket socket, string message)
     {
-        byte[] messageBytes = Encoding.UTF8.GetBytes($"{message}{Eom}");
-        _ = await socket.SendAsync(messageBytes);
+        _ = await socket.SendAsync(Encoding.UTF8.GetBytes($"{message}{Eom}"));
     }
 
-    public static async Task SendAck(Socket socket)
+    public static async Task SendAckAsync(Socket socket)
     {
-        await Send(socket, $"{Ack}");
+        await SendAsync(socket, $"{Ack}");
     }
 
-    public static async Task<bool> ReceiveAck(Socket socket)
+    public static async Task<bool> ReceiveAckAsync(Socket socket)
     {
-        return (await Receive(socket))[0] == Ack;
+        return (await ReceiveAsync(socket))[0] == Ack;
     }
 
-    public static async Task<IPEndPoint> GetIpEndPoint(string hostName, int port)
+    public static async Task<IPEndPoint> GetIpEndPointAsync(string hostName, int port)
     {
         IPHostEntry ipHostInfo = await Dns.GetHostEntryAsync(hostName);
         IPAddress ipAddress = ipHostInfo.AddressList[0];
